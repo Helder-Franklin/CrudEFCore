@@ -12,31 +12,28 @@ namespace TesteEFCore.Controllers
         {
             _contexto = contexto;
         }
+        [HttpGet]
+        public IActionResult Add()
+        {
+            return View();
+       
+        }
 
-        public IActionResult Index()
+        [HttpPost]
+
+        public async Task <IActionResult> Add(AddAlunoViewModel addAlunoRequest)
         {
             var aluno = new Aluno()
             {
-                Nome = "Teste",
-                DataNascimento = DateTime.Now,
-                Email = "helder@email.com"
+                Id = Guid.NewGuid(),
+                Nome = addAlunoRequest.Nome,
+                Email = addAlunoRequest.Email,
+                DataNascimento = addAlunoRequest.DataNascimento
             };
 
-            _contexto.Alunos.Add(aluno);
-            _contexto.SaveChanges();
-
-            var aluno2 = _contexto.Alunos.Find(aluno.Id);
-            var aluno3 = _contexto.Alunos.FirstOrDefault(a => a.Email == "helder@email.com");
-            var aluno4 = _contexto.Alunos.Where(a => a.Nome == "Teste");
-
-            aluno.Nome = "João";
-            _contexto.Alunos.Update(aluno);
-            _contexto.SaveChanges();
-
-            _contexto.Alunos.Remove(aluno);
-            _contexto.SaveChanges();
-
-            return View();
+            await _contexto.Alunos.AddAsync(aluno);
+            await _contexto.SaveChangesAsync();
+            return RedirectToAction("Add");
         }
     }
 }
